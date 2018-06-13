@@ -1,6 +1,8 @@
 package com.illusionware.sonatype.data;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -16,8 +18,11 @@ public class NumbersMapping {
 
     private static final NavigableMap<Integer, String> numbersMapping;
 
+    private static final Map<Integer, String> powersMapping;
+
     private static final String ERROR_ARGUMENT_OUTSIDE_OF_RANGE = "The argument for the function is outside of the allowed range [0..99], provided value: {0}";
 
+    // Static initializer of the numbers mapping
     static {
         numbersMapping = new TreeMap<>();
         numbersMapping.put(0, "zero");
@@ -50,6 +55,22 @@ public class NumbersMapping {
         numbersMapping.put(90, "ninety");
     }
 
+    // Static initializer of the powers mapping
+    static {
+        powersMapping = new HashMap<>();
+        powersMapping.put(0, "");
+        powersMapping.put(3, "thousand");
+        powersMapping.put(6, "million");
+        powersMapping.put(9, "billion");
+        powersMapping.put(12, "trillion");
+        powersMapping.put(15, "quadrillion");
+        powersMapping.put(18, "quintillion");
+        powersMapping.put(21, "sextillion");
+        powersMapping.put(24, "septillion");
+        powersMapping.put(27, "octillion");
+        powersMapping.put(30, "nonillion");
+    }
+
     /**
      * Finds the word that maps to the given number or the nearest one whose key is lower than the provided number to be mapped.
      * The function will only work for number from 0 to 99, if any number outside of this range.
@@ -62,6 +83,10 @@ public class NumbersMapping {
             throw new IllegalArgumentException(MessageFormat.format(ERROR_ARGUMENT_OUTSIDE_OF_RANGE, numberToBeMapped));
         }
         return numbersMapping.floorEntry(numberToBeMapped).getValue();
+    }
+
+    public static String getWordForPower(int power) {
+        return powersMapping.get(power);
     }
 
 }
