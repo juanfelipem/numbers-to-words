@@ -4,6 +4,14 @@ import java.text.MessageFormat;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
+/**
+ * This class contains the mappings to tens and ones for the English language.
+ * The numbers in English language are built by splitting the value into hundreds, tens and ones,
+ * this utility class will allow to find the nearest mapping for a number between 0..99.
+ *
+ * Keep in mind that the first 19 numbers have specific words and from there every 10 numbers there is a new word each,
+ * it is possible to build all the numbers from 0 to 99 by finding the corresponding mapping for the tens and ones in the number.
+ */
 public class NumbersMapping {
 
     private static final NavigableMap<Integer, String> numbersMapping;
