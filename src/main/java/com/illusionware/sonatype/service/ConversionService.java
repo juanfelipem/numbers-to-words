@@ -6,6 +6,7 @@ import com.illusionware.sonatype.util.StringUtils;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * This service provides functionality to allow the conversion of numbers to words.
@@ -19,7 +20,14 @@ public class ConversionService {
     private static final String EMPTY_STRING = "";
     private static final String BLANK_SPACE = " ";
     private static final String AND_CONCATENATOR = " and ";
-    private static final String LABEL_MINUS = "minus";
+    private static final String LABEL_NEGATIVE = "negative";
+    private static final long ZERO = 0L;
+
+    /**
+     * The word used for building numbers in English changes every third power of 10, for power of 10 mapping to a word
+     * please refer to {@link com.illusionware.sonatype.data.NumbersMapping}
+     */
+    private static final int POWER_INCREMENTS = 3;
 
     /**
      * Converts a given value into its English representation
@@ -27,38 +35,43 @@ public class ConversionService {
      * @return
      */
     public String convertNumberToWords(long valueToConvert) {
-        if(valueToConvert == 0) {
-            String wordForZero = NumbersMapping.getNumberMappingOrNearest((int) valueToConvert); // No risk of losing precision since the number is 0
+        if(valueToConvert == ZERO) {
+            String wordForZero = NumbersMapping.getNumberMappingOrNearest((int) ZERO); // No risk of losing precision since the number is 0
             return StringUtils.makeFirstLetterUppercase(wordForZero);
         }
 
         boolean isNegative = false;
-        if(valueToConvert < 0) {
+        if(valueToConvert < ZERO) {
             isNegative = true;
         }
 
         List<Integer> splitsOfHundreds = splitValueIntoListOfHundreds(valueToConvert, true);
-        int power = 0;
+        int powersOfTen = (splitsOfHundreds.size() - 1) * POWER_INCREMENTS;
         List<String> numberToWordList = new ArrayList<>();
         for (int hundred: splitsOfHundreds) {
-            boolean shouldIncludeAndWordForTens = power == 0; // Only the first hundred value will have the "and" between the hundred and the tens.
+            boolean shouldIncludeAndWordForTens = powersOfTen == 0; // Only the first hundred value will have the "and" between the hundred and the tens.
 
             if(hundred > 0) { // Sections of hundreds equal to 0 don't go in the word.
                 String wordForHundred = convertHundredsToWords(hundred, shouldIncludeAndWordForTens);
-                String wordForPower = NumbersMapping.getWordForPower(power);
-                numberToWordList.add(0, StringUtils.concatWithSepparator(BLANK_SPACE, wordForHundred, wordForPower));
+                String wordForPower = NumbersMapping.getWordForPower(powersOfTen);
+                numberToWordList.add(StringUtils.concatWithSepparator(BLANK_SPACE, wordForHundred, wordForPower));
             }
-            power += 3; // Increase the power to the next the hundred value since each three power the word changes.
+            powersOfTen -= POWER_INCREMENTS; // Decrease the power to find the next word that corresponds to this power of 10..
         }
 
+        // Concat all the parts
         String numberToWords = StringUtils.concatWithSepparator(BLANK_SPACE, numberToWordList.toArray(new String[numberToWordList.size()]));
-        String numberToWsFirstLetterUppercase = StringUtils.makeFirstLetterUppercase(numberToWords);
-        return isNegative ? StringUtils.concatWithSepparator(BLANK_SPACE, LABEL_MINUS, numberToWsFirstLetterUppercase):numberToWsFirstLetterUppercase;
+
+        // Add Negative label if applies
+        numberToWords = isNegative ? StringUtils.concatWithSepparator(BLANK_SPACE, LABEL_NEGATIVE, numberToWords):numberToWords;
+
+        // First letter of the converted number should be upper-case
+        return StringUtils.makeFirstLetterUppercase(numberToWords);
     }
 
     /**
-     * Splits the given number into a list of elements of hundreds, for example the number 159663 will result in a list of two elements [663, 159]
-     * Another example is the following number 65335 which result in a list of two elements [335, 65]
+     * Splits the given number into a list of elements of hundreds, for example the number 159663 will result in a list of two elements [159, 663]
+     * Another example is the following number 65335 which result in a list of two elements [65, 335]
      * @param value
      * @return
      */
@@ -68,14 +81,14 @@ public class ConversionService {
         int i;
         for(i = stringValue.length(); i > 3; i -= 3) {
             int hundredValue = Integer.parseInt(stringValue.substring(i - 3, i));
-            hundreds.add(hundredValue);
+            hundreds.add(0, hundredValue);
         }
         // We need to add the last first digits of the number and since for them we do not know if they are 1, 2, or 3 digits
         // then we skip them on the loop and just add whatever is left to be added.
         if(ditchSign) {
-            hundreds.add(Math.abs(Integer.parseInt(stringValue.substring(0, i))));
+            hundreds.add(0, Math.abs(Integer.parseInt(stringValue.substring(0, i))));
         } else {
-            hundreds.add(Integer.parseInt(stringValue.substring(0, i)));
+            hundreds.add(0, Integer.parseInt(stringValue.substring(0, i)));
         }
         return hundreds;
     }

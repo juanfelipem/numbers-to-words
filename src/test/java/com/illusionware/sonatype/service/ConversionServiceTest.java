@@ -71,7 +71,7 @@ public class ConversionServiceTest
                 "One billion one hundred twenty three million four hundred fifty six thousand seven hundred and eighty nine", sixthTest);
 
         String seventhTest = conversionService.convertNumberToWords(-10);
-        Assert.assertEquals("The value -10 should be mapped correctly", "minus Ten", seventhTest);
+        Assert.assertEquals("The value -10 should be mapped correctly", "Negative ten", seventhTest);
 
         String eightTest = conversionService.convertNumberToWords(Long.MAX_VALUE);
         Assert.assertEquals("The value Long.MAX_VALUE should be mapped correctly",
@@ -79,7 +79,7 @@ public class ConversionServiceTest
 
         String ninthTest = conversionService.convertNumberToWords(Long.MIN_VALUE);
         Assert.assertEquals("The value Long.MIN_VALUE + 1 should be mapped correctly",
-                "minus Nine quintillion two hundred twenty three quadrillion three hundred seventy two trillion thirty six billion eight hundred fifty four million seven hundred seventy five thousand eight hundred and eight", ninthTest);
+                "Negative nine quintillion two hundred twenty three quadrillion three hundred seventy two trillion thirty six billion eight hundred fifty four million seven hundred seventy five thousand eight hundred and eight", ninthTest);
     }
 
 }
