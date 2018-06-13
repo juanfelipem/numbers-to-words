@@ -1,4 +1,4 @@
-package service;
+package com.illusionware.sonatype.service;
 
 import static org.junit.Assert.assertTrue;
 

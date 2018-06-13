@@ -1,4 +1,4 @@
-package data;
+package com.illusionware.sonatype.data;
 
 import java.text.MessageFormat;
 import java.util.NavigableMap;

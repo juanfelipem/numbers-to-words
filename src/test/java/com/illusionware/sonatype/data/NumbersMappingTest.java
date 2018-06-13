@@ -1,4 +1,4 @@
-package data;
+package com.illusionware.sonatype.data;
 
 import org.junit.Assert;
 import org.junit.Test;
