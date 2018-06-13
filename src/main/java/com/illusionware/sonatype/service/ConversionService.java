@@ -1,12 +1,11 @@
 package com.illusionware.sonatype.service;
 
 import com.illusionware.sonatype.data.NumbersMapping;
-import com.illusionware.sonatype.util.StringUtils;
+import com.illusionware.sonatype.util.SonatypeStringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * This service provides functionality to allow the conversion of numbers to words.
@@ -15,7 +14,6 @@ import java.util.Stack;
 public class ConversionService {
 
     private static final String ERROR_ARGUMENT_OUTSIDE_OF_RANGE = "The argument for the function is outside of the allowed range [0..999], provided value: {0}";
-    private static final String ERROR_ARGUMENT_NOT_ALLOWED = "The minimum value that can be converted is (-2^63) + 1";
     private static final String LABEL_HUNDREDS = "hundred";
     private static final String EMPTY_STRING = "";
     private static final String BLANK_SPACE = " ";
@@ -25,19 +23,19 @@ public class ConversionService {
 
     /**
      * The word used for building numbers in English changes every third power of 10, for power of 10 mapping to a word
-     * please refer to {@link com.illusionware.sonatype.data.NumbersMapping}
+     * please refer to {@link NumbersMapping}
      */
     private static final int POWER_INCREMENTS = 3;
 
     /**
      * Converts a given value into its English representation
-     * @param valueToConvert
+     * @param valueToConvert The numeric value we want to convert into words
      * @return
      */
     public String convertNumberToWords(long valueToConvert) {
         if(valueToConvert == ZERO) {
             String wordForZero = NumbersMapping.getNumberMappingOrNearest((int) ZERO); // No risk of losing precision since the number is 0
-            return StringUtils.makeFirstLetterUppercase(wordForZero);
+            return SonatypeStringUtils.makeFirstLetterUppercase(wordForZero);
         }
 
         boolean isNegative = false;
@@ -54,19 +52,19 @@ public class ConversionService {
             if(hundred > 0) { // Sections of hundreds equal to 0 don't go in the word.
                 String wordForHundred = convertHundredsToWords(hundred, shouldIncludeAndWordForTens);
                 String wordForPower = NumbersMapping.getWordForPower(powersOfTen);
-                numberToWordList.add(StringUtils.concatWithSepparator(BLANK_SPACE, wordForHundred, wordForPower));
+                numberToWordList.add(SonatypeStringUtils.concatWithSepparator(BLANK_SPACE, wordForHundred, wordForPower));
             }
             powersOfTen -= POWER_INCREMENTS; // Decrease the power to find the next word that corresponds to this power of 10..
         }
 
         // Concat all the parts
-        String numberToWords = StringUtils.concatWithSepparator(BLANK_SPACE, numberToWordList.toArray(new String[numberToWordList.size()]));
+        String numberToWords = SonatypeStringUtils.concatWithSepparator(BLANK_SPACE, numberToWordList.toArray(new String[numberToWordList.size()]));
 
         // Add Negative label if applies
-        numberToWords = isNegative ? StringUtils.concatWithSepparator(BLANK_SPACE, LABEL_NEGATIVE, numberToWords):numberToWords;
+        numberToWords = isNegative ? SonatypeStringUtils.concatWithSepparator(BLANK_SPACE, LABEL_NEGATIVE, numberToWords):numberToWords;
 
         // First letter of the converted number should be upper-case
-        return StringUtils.makeFirstLetterUppercase(numberToWords);
+        return SonatypeStringUtils.makeFirstLetterUppercase(numberToWords);
     }
 
     /**
@@ -95,7 +93,7 @@ public class ConversionService {
 
     /**
      * Receives a number and built its corresponding word by splitting the hundreds, tens and ones of the provided number,
-     * it uses the mapping provided by {@link com.illusionware.sonatype.data.NumbersMapping} to find the mapping for tens and ones,
+     * it uses the mapping provided by {@link NumbersMapping} to find the mapping for tens and ones,
      * the mapping for hundreds depends on whether or not the number is higher than 99.
      *
      * Allowed range to be used with this method is [0..999] Any value outside this range will cause an exception.
@@ -126,7 +124,7 @@ public class ConversionService {
         if(remainderFromHundreds > 0) {
             String wordForTens = getWordForTens(remainderFromHundreds);
             String separator = !EMPTY_STRING.equals(wordForHundreds) ? (includeAndWordForTens ? AND_CONCATENATOR:BLANK_SPACE):EMPTY_STRING;
-            wordForHundreds = StringUtils.concatWithSepparator(separator, wordForHundreds, wordForTens);
+            wordForHundreds = SonatypeStringUtils.concatWithSepparator(separator, wordForHundreds, wordForTens);
         }
 
         return wordForHundreds;

@@ -2,7 +2,7 @@ package com.illusionware.sonatype.util;
 
 import java.util.StringJoiner;
 
-public class StringUtils {
+public class SonatypeStringUtils {
 
     private static final String EMPTY_STRING = "";
 
@@ -18,7 +18,7 @@ public class StringUtils {
 
     /**
      * Changes the first letter of the word to be upper-case
-     * @param originalString
+     * @param originalString The string to which we will upper-case the first letter.
      * @return
      */
     public static String makeFirstLetterUppercase(String originalString) {
