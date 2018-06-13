@@ -85,6 +85,11 @@ public class NumbersMapping {
         return numbersMapping.floorEntry(numberToBeMapped).getValue();
     }
 
+    /**
+     * Returns the English word associated with a given power of ten.
+     * @param power
+     * @return
+     */
     public static String getWordForPower(int power) {
         return powersMapping.get(power);
     }

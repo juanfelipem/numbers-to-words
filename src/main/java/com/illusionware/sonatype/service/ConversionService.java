@@ -1,11 +1,10 @@
 package com.illusionware.sonatype.service;
 
 import com.illusionware.sonatype.data.NumbersMapping;
-import com.illusionware.sonatype.util.StringUtil;
+import com.illusionware.sonatype.util.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,16 +14,30 @@ import java.util.List;
 public class ConversionService {
 
     private static final String ERROR_ARGUMENT_OUTSIDE_OF_RANGE = "The argument for the function is outside of the allowed range [0..999], provided value: {0}";
+    private static final String ERROR_ARGUMENT_NOT_ALLOWED = "The minimum value that can be converted is (-2^63) + 1";
     private static final String LABEL_HUNDREDS = "hundred";
     private static final String EMPTY_STRING = "";
+    private static final String BLANK_SPACE = " ";
+    private static final String AND_CONCATENATOR = " and ";
+    private static final String LABEL_MINUS = "minus";
 
+    /**
+     * Converts a given value into its English representation
+     * @param valueToConvert
+     * @return
+     */
     public String convertNumberToWords(long valueToConvert) {
         if(valueToConvert == 0) {
             String wordForZero = NumbersMapping.getNumberMappingOrNearest((int) valueToConvert); // No risk of losing precision since the number is 0
-            return wordForZero.substring(0,1).toUpperCase() +  wordForZero.substring(1, wordForZero.length());
+            return StringUtils.makeFirstLetterUppercase(wordForZero);
         }
 
-        List<Integer> splitsOfHundreds = splitValueIntoListOfHundreds(valueToConvert);
+        boolean isNegative = false;
+        if(valueToConvert < 0) {
+            isNegative = true;
+        }
+
+        List<Integer> splitsOfHundreds = splitValueIntoListOfHundreds(valueToConvert, true);
         int power = 0;
         List<String> numberToWordList = new ArrayList<>();
         for (int hundred: splitsOfHundreds) {
@@ -33,13 +46,14 @@ public class ConversionService {
             if(hundred > 0) { // Sections of hundreds equal to 0 don't go in the word.
                 String wordForHundred = convertHundredsToWords(hundred, shouldIncludeAndWordForTens);
                 String wordForPower = NumbersMapping.getWordForPower(power);
-                numberToWordList.add(0, StringUtil.concatWithSepparator(" ", wordForHundred, wordForPower));
+                numberToWordList.add(0, StringUtils.concatWithSepparator(BLANK_SPACE, wordForHundred, wordForPower));
             }
-            power += 3; // Increase the power of the hundred value since each three power the word changes.
+            power += 3; // Increase the power to the next the hundred value since each three power the word changes.
         }
 
-        String numberToWords = StringUtil.concatWithSepparator(" ", numberToWordList.toArray(new String[numberToWordList.size()]));
-        return numberToWords.substring(0,1).toUpperCase() +  numberToWords.substring(1, numberToWords.length()); // First letter must be capitalized.
+        String numberToWords = StringUtils.concatWithSepparator(BLANK_SPACE, numberToWordList.toArray(new String[numberToWordList.size()]));
+        String numberToWsFirstLetterUppercase = StringUtils.makeFirstLetterUppercase(numberToWords);
+        return isNegative ? StringUtils.concatWithSepparator(BLANK_SPACE, LABEL_MINUS, numberToWsFirstLetterUppercase):numberToWsFirstLetterUppercase;
     }
 
     /**
@@ -48,7 +62,7 @@ public class ConversionService {
      * @param value
      * @return
      */
-    private List<Integer> splitValueIntoListOfHundreds(long value) {
+    private List<Integer> splitValueIntoListOfHundreds(long value, boolean ditchSign) {
         String stringValue = Long.toString(value);
         List<Integer> hundreds = new ArrayList<>();
         int i;
@@ -58,7 +72,11 @@ public class ConversionService {
         }
         // We need to add the last first digits of the number and since for them we do not know if they are 1, 2, or 3 digits
         // then we skip them on the loop and just add whatever is left to be added.
-        hundreds.add(Integer.parseInt(stringValue.substring(0, i)));
+        if(ditchSign) {
+            hundreds.add(Math.abs(Integer.parseInt(stringValue.substring(0, i))));
+        } else {
+            hundreds.add(Integer.parseInt(stringValue.substring(0, i)));
+        }
         return hundreds;
     }
 
@@ -94,8 +112,8 @@ public class ConversionService {
         int remainderFromHundreds = valueToConvert % 100;
         if(remainderFromHundreds > 0) {
             String wordForTens = getWordForTens(remainderFromHundreds);
-            String separator = !EMPTY_STRING.equals(wordForHundreds) ? (includeAndWordForTens ? " and ":" "):EMPTY_STRING;
-            wordForHundreds += separator + wordForTens;
+            String separator = !EMPTY_STRING.equals(wordForHundreds) ? (includeAndWordForTens ? AND_CONCATENATOR:BLANK_SPACE):EMPTY_STRING;
+            wordForHundreds = StringUtils.concatWithSepparator(separator, wordForHundreds, wordForTens);
         }
 
         return wordForHundreds;
