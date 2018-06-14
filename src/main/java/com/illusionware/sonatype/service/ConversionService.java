@@ -80,8 +80,8 @@ public class ConversionService {
         }
         List<Integer> hundreds = new ArrayList<>();
         int i;
-        for(i = stringValue.length(); i > 3; i -= 3) {
-            int hundredValue = Integer.parseInt(stringValue.substring(i - 3, i));
+        for(i = stringValue.length(); i > POWER_INCREMENTS; i -= POWER_INCREMENTS) {
+            int hundredValue = Integer.parseInt(stringValue.substring(i - POWER_INCREMENTS, i));
             hundreds.add(0, hundredValue);
         }
         // We need to add the last first digits of the number and since for them we do not know if they are 1, 2, or 3 digits
