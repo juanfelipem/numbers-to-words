@@ -75,6 +75,9 @@ public class ConversionService {
      */
     private List<Integer> splitValueIntoListOfHundreds(long value, boolean ditchSign) {
         String stringValue = Long.toString(value);
+        if(stringValue.startsWith("-") && ditchSign) {
+            stringValue = stringValue.substring(1, stringValue.length());
+        }
         List<Integer> hundreds = new ArrayList<>();
         int i;
         for(i = stringValue.length(); i > 3; i -= 3) {
@@ -83,11 +86,7 @@ public class ConversionService {
         }
         // We need to add the last first digits of the number and since for them we do not know if they are 1, 2, or 3 digits
         // then we skip them on the loop and just add whatever is left to be added.
-        if(ditchSign) {
-            hundreds.add(0, Math.abs(Integer.parseInt(stringValue.substring(0, i))));
-        } else {
-            hundreds.add(0, Integer.parseInt(stringValue.substring(0, i)));
-        }
+        hundreds.add(0, Integer.parseInt(stringValue.substring(0, i)));
         return hundreds;
     }
 
