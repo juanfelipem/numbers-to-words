@@ -37,5 +37,5 @@ These previous instructions will download a copy of the repository to your machi
 ## Design considerations
 
 * Use of plain Java:
-    This was decided since the problem didn't really needed anything else to be solve, no extra libraries was used to keep the
+    This was decided since the problem didn't really needed anything else to be solved, no extra libraries was used to keep the
     code simple and make the executable lightweight.

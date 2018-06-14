@@ -2,6 +2,7 @@ package com.illusionware.sonatype.data;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -18,17 +19,26 @@ import java.util.TreeMap;
  * Keep in mind that the first 19 numbers have specific words and from there every 10 numbers there is a new word each,
  * it is possible to build all the numbers from 0 to 99 by finding the corresponding mapping for the tens and ones in the number.
  */
-public class NumbersMapping {
+public class StaticNumbersMapper implements NumbersMapper {
 
-    private static final NavigableMap<Integer, String> numbersMapping;
+    private final NavigableMap<Integer, String> numbersMapping;
 
-    private static final Map<Integer, String> powersMapping;
+    private final Map<Integer, String> powersMapping;
 
     private static final String ERROR_ARGUMENT_OUTSIDE_OF_RANGE = "The argument for the function is outside of the allowed range [0..99], provided value: {0}";
 
-    // Static initializer of the numbers mapping
-    static {
+    public StaticNumbersMapper() {
         numbersMapping = new TreeMap<>();
+        initializeNumbersMapping();
+
+        powersMapping = new HashMap<>();
+        initializePowersMapping();
+    }
+
+    /**
+     * initializer of the numbers mapping
+     */
+    private void initializeNumbersMapping() {
         numbersMapping.put(0, "zero");
         numbersMapping.put(1, "one");
         numbersMapping.put(2, "two");
@@ -59,9 +69,10 @@ public class NumbersMapping {
         numbersMapping.put(90, "ninety");
     }
 
-    // Static initializer of the powers mapping
-    static {
-        powersMapping = new HashMap<>();
+    /**
+     * initializer of the powers mapping
+     */
+    private void initializePowersMapping() {
         powersMapping.put(0, "");
         powersMapping.put(3, "thousand");
         powersMapping.put(6, "million");
@@ -82,7 +93,8 @@ public class NumbersMapping {
      * @return String value of the nearest mapping for a number or null if the number doesn't have a nearest mapping.
      * @throws IllegalArgumentException If the given number is outside of the allowed values
      */
-    public static String getNumberMappingOrNearest(int numberToBeMapped) {
+    @Override
+    public String getNumberMappingOrNearest(int numberToBeMapped) {
         if(0 > numberToBeMapped || numberToBeMapped > 99) {
             throw new IllegalArgumentException(MessageFormat.format(ERROR_ARGUMENT_OUTSIDE_OF_RANGE, numberToBeMapped));
         }
@@ -94,7 +106,8 @@ public class NumbersMapping {
      * @param power
      * @return
      */
-    public static String getWordForPower(int power) {
+    @Override
+    public String getWordForPower(int power) {
         return powersMapping.get(power);
     }
 

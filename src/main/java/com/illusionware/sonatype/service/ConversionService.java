@@ -1,6 +1,7 @@
 package com.illusionware.sonatype.service;
 
-import com.illusionware.sonatype.data.NumbersMapping;
+import com.illusionware.sonatype.data.NumbersMapper;
+import com.illusionware.sonatype.data.StaticNumbersMapper;
 import com.illusionware.sonatype.util.SonatypeStringUtils;
 
 import java.text.MessageFormat;
@@ -23,10 +24,11 @@ public class ConversionService {
 
     /**
      * The word used for building numbers in English changes every third power of 10, for power of 10 mapping to a word
-     * please refer to {@link NumbersMapping}
+     * please refer to {@link StaticNumbersMapper}
      */
     private static final int POWER_INCREMENTS = 3;
 
+    private final NumbersMapper numbersMapper = new StaticNumbersMapper();
     /**
      * Converts a given value into its English representation
      * @param valueToConvert The numeric value we want to convert into words
@@ -34,7 +36,7 @@ public class ConversionService {
      */
     public String convertNumberToWords(long valueToConvert) {
         if(valueToConvert == ZERO) {
-            String wordForZero = NumbersMapping.getNumberMappingOrNearest((int) ZERO); // No risk of losing precision since the number is 0
+            String wordForZero = numbersMapper.getNumberMappingOrNearest((int) ZERO); // No risk of losing precision since the number is 0
             return SonatypeStringUtils.makeFirstLetterUppercase(wordForZero);
         }
 
@@ -51,7 +53,7 @@ public class ConversionService {
 
             if(hundred > 0) { // Sections of hundreds equal to 0 don't go in the word.
                 String wordForHundred = convertHundredsToWords(hundred, shouldIncludeAndWordForTens);
-                String wordForPower = NumbersMapping.getWordForPower(powersOfTen);
+                String wordForPower = numbersMapper.getWordForPower(powersOfTen);
                 numberToWordList.add(SonatypeStringUtils.concatWithSepparator(BLANK_SPACE, wordForHundred, wordForPower));
             }
             powersOfTen -= POWER_INCREMENTS; // Decrease the power to find the next word that corresponds to this power of 10..
@@ -92,7 +94,7 @@ public class ConversionService {
 
     /**
      * Receives a number and built its corresponding word by splitting the hundreds, tens and ones of the provided number,
-     * it uses the mapping provided by {@link NumbersMapping} to find the mapping for tens and ones,
+     * it uses the mapping provided by {@link StaticNumbersMapper} to find the mapping for tens and ones,
      * the mapping for hundreds depends on whether or not the number is higher than 99.
      *
      * Allowed range to be used with this method is [0..999] Any value outside this range will cause an exception.
@@ -108,14 +110,14 @@ public class ConversionService {
 
         // Zero always maps to Zero
         if(valueToConvert == 0) {
-            return NumbersMapping.getNumberMappingOrNearest(valueToConvert);
+            return numbersMapper.getNumberMappingOrNearest(valueToConvert);
         }
 
         // Build the word mapping for the hundreds section of the number
         int amountOfHundreds = valueToConvert / 100;
         String wordForHundreds = EMPTY_STRING;
         if(amountOfHundreds > 0) {
-            wordForHundreds = NumbersMapping.getNumberMappingOrNearest(amountOfHundreds) + " " + LABEL_HUNDREDS;
+            wordForHundreds = numbersMapper.getNumberMappingOrNearest(amountOfHundreds) + " " + LABEL_HUNDREDS;
         }
 
         // Build the word mapping for the tens section of the number
@@ -136,14 +138,14 @@ public class ConversionService {
      */
     private String getWordForTens(int value) {
         if(value < 20) { // First 19 numbers in the alphabet have a direct mapping. They are not constructed.
-            return NumbersMapping.getNumberMappingOrNearest(value);
+            return numbersMapper.getNumberMappingOrNearest(value);
         }
 
-        String wordForTens = NumbersMapping.getNumberMappingOrNearest(value);
+        String wordForTens = numbersMapper.getNumberMappingOrNearest(value);
 
         int remainderFromTens = value % 10;
         if(remainderFromTens > 0) {
-            String wordForOnes = NumbersMapping.getNumberMappingOrNearest(remainderFromTens);
+            String wordForOnes = numbersMapper.getNumberMappingOrNearest(remainderFromTens);
             wordForTens += " " + wordForOnes;
         }
 
