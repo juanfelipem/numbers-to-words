@@ -16,8 +16,7 @@ import java.util.TreeMap;
  * 10^3 and smaller than 10^6 will be in the order of thousand, a number that's equal or larger than
  * 10^15 and smaller than 10^18 will be in the order of quadrillion.
  *
- * Keep in mind that the first 19 numbers have specific words and from there every 10 numbers there is a new word each,
- * it is possible to build all the numbers from 0 to 99 by finding the corresponding mapping for the tens and ones in the number.
+ *
  */
 public class StaticNumbersMapper implements NumbersMapper {
 

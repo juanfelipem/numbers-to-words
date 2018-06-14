@@ -2,6 +2,8 @@ package com.illusionware.sonatype.data;
 
 /**
  * Provides mapping for the ones and tens sections of the English numbers for representing full numbers in English.
+ * Keep in mind that the first 20 numbers have specific words, from 0 to 19, then starting from 20 and every 10 numbers up to 90 there is a different word for each of them,
+ * it is possible to build all the numbers from 0 to 99 by finding the corresponding mapping for the tens and ones for the number parts.
  */
 public interface NumbersMapper {
 
