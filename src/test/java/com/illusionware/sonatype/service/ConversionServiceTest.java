@@ -1,18 +1,13 @@
 package com.illusionware.sonatype.service;
 
-import static org.junit.Assert.assertTrue;
-
-import com.illusionware.sonatype.data.NumbersMapping;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * Unit test for simple ConversionService.
  */
-public class ConversionServiceTest
-{
+public class ConversionServiceTest {
 
     private ConversionService conversionService;
 
@@ -34,13 +29,15 @@ public class ConversionServiceTest
     @Test
     public void shouldConvertHundredsCorrectlyWithAnd() {
         String hundredsToWordsWithAnd = conversionService.convertHundredsToWords(945, true);
-        Assert.assertEquals("The value 945 should be mapped correctly", "nine hundred and forty five", hundredsToWordsWithAnd);
+        Assert.assertEquals("The value 945 should be mapped correctly", "nine hundred and forty five",
+                hundredsToWordsWithAnd);
     }
 
     @Test
     public void shouldConvertHundredsCorrectlyWithoutAnd() {
         String hundredsToWordsWithoutAnd = conversionService.convertHundredsToWords(399, false);
-        Assert.assertEquals("The value 399 should be mapped correctly", "three hundred ninety nine", hundredsToWordsWithoutAnd);
+        Assert.assertEquals("The value 399 should be mapped correctly", "three hundred ninety nine",
+                hundredsToWordsWithoutAnd);
     }
 
     @Test
